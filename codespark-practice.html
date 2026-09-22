@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CodeSpark Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0b1220;
+    --bg-1:#101a2c;
+    --panel:#141f36;
+    --panel-2:#0e1729;
+    --line:#26324a;
+    --text:#e9edf5;
+    --muted:#7f8cab;
+    --amber:#f2a93b;
+    --amber-dim:#7a5b26;
+    --green:#4fd1a0;
+    --red:#f0625a;
+    --radius:14px;
+    box-sizing:border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top: env(safe-area-inset-top, 0px);}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100%;
+    background:
+      radial-gradient(1200px 700px at 15% -10%, #16233f 0%, transparent 60%),
+      radial-gradient(1000px 600px at 110% 10%, #142238 0%, transparent 55%),
+      var(--bg-0);
+    color:var(--text);
+    font-family:'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+  }
+  .mono{font-family:'JetBrains Mono', ui-monospace, monospace;}
+
+  .stage{
+    width:100%;
+    max-width:640px;
+  }
+
+  .kicker{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin:0 4px 14px;
+  }
+  .kicker .spark{
+    color:var(--amber);
+    font-size:20px;
+  }
+  .kicker h1{
+    font-size:15px;
+    letter-spacing:0.02em;
+    margin:0;
+    font-weight:600;
+    color:var(--text);
+  }
+  .kicker span.sub{
+    color:var(--muted);
+    font-size:13px;
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  .window{
+    background:linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow: 0 30px 60px -25px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02) inset;
+    overflow:hidden;
+  }
+
+  .titlebar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 16px;
+    border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,0.015);
+  }
+  .dots{display:flex; gap:7px;}
+  .dots i{
+    width:10px;height:10px;border-radius:50%;
+    background:#2a3652;
+    display:inline-block;
+  }
+  .filetab{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .filetab .dotfile{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--amber);
+    display:inline-block;
+    box-shadow:0 0 8px 1px rgba(242,169,59,0.6);
+  }
+  .streak{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    color:var(--muted);
+  }
+  .streak b{color:var(--amber); font-weight:600;}
+
+  .progress-row{
+    display:flex;
+    gap:5px;
+    padding:14px 18px 0;
+  }
+  .progress-row i{
+    flex:1;
+    height:4px;
+    border-radius:3px;
+    background:var(--line);
+    display:block;
+  }
+  .progress-row i.done{background:var(--amber);}
+  .progress-row i.now{background:var(--muted);}
+
+  .content{
+    padding:26px 24px 24px;
+    min-height:340px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .qmeta{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:10px;
+  }
+  .qmeta .tag{
+    color:var(--green);
+  }
+
+  .question{
+    font-size:19px;
+    line-height:1.5;
+    font-weight:600;
+    color:var(--text);
+    margin:0 0 6px;
+  }
+  .snippet{
+    font-family:'JetBrains Mono', monospace;
+    font-size:14.5px;
+    line-height:1.7;
+    color:#cdd6ea;
+    background:rgba(0,0,0,0.28);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    margin:14px 0 22px;
+    white-space:pre;
+    overflow-x:auto;
+  }
+  .snippet .kw{color:#f2a93b;}
+  .snippet .fn{color:#7fb0ff;}
+  .snippet .str{color:#4fd1a0;}
+  .snippet .cm{color:#5b6787;}
+
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:auto;
+  }
+  .opt{
+    text-align:left;
+    background:rgba(255,255,255,0.02);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:10px;
+    padding:13px 15px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:14px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    transition:border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .opt .prompt{color:var(--muted);}
+  .opt:hover:not(:disabled){
+    border-color:#3a4a6b;
+    background:rgba(255,255,255,0.045);
+  }
+  .opt:active:not(:disabled){transform:scale(0.997);}
+  .opt:disabled{cursor:default;}
+  .opt.correct{
+    border-color:var(--green);
+    background:rgba(79,209,160,0.09);
+  }
+  .opt.correct .prompt{color:var(--green);}
+  .opt.wrong{
+    border-color:var(--red);
+    background:rgba(240,98,90,0.09);
+  }
+  .opt.wrong .prompt{color:var(--red);}
+  .opt.fade{opacity:0.35;}
+
+  .feedback{
+    margin-top:16px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    color:var(--muted);
+    line-height:1.6;
+    min-height:18px;
+  }
+  .feedback b{color:var(--text);}
+
+  .footer-row{
+    display:flex;
+    justify-content:flex-end;
+    padding:0 24px 22px;
+  }
+  .next-btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:#0b1220;
+    background:var(--amber);
+    border:none;
+    border-radius:9px;
+    padding:10px 18px;
+    font-weight:600;
+    cursor:pointer;
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity .18s ease, transform .18s ease;
+  }
+  .next-btn.show{opacity:1; transform:translateY(0);}
+
+  /* summary screen */
+  .summary{
+    padding:40px 30px 34px;
+    text-align:center;
+  }
+  .summary .big{
+    font-family:'JetBrains Mono', monospace;
+    font-size:56px;
+    font-weight:700;
+    color:var(--amber);
+    margin:6px 0 4px;
+    letter-spacing:-0.02em;
+  }
+  .summary .label{
+    color:var(--muted);
+    font-size:13px;
+    font-family:'JetBrains Mono', monospace;
+    margin-bottom:26px;
+  }
+  .summary h2{
+    font-size:20px;
+    margin:0 0 8px;
+  }
+  .summary p.msg{
+    color:#aab4cc;
+    font-size:14.5px;
+    line-height:1.6;
+    max-width:420px;
+    margin:0 auto 28px;
+  }
+  .summary-actions{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    border-radius:9px;
+    padding:11px 18px;
+    cursor:pointer;
+    font-weight:600;
+    border:1px solid var(--line);
+  }
+  .btn.primary{
+    background:var(--amber);
+    color:#0b1220;
+    border:none;
+  }
+  .btn.ghost{
+    background:transparent;
+    color:var(--text);
+  }
+  .btn.ghost:hover{border-color:#3a4a6b;}
+
+  .foot-note{
+    text-align:center;
+    color:var(--muted);
+    font-size:12px;
+    font-family:'JetBrains Mono', monospace;
+    margin-top:18px;
+    opacity:0.8;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .opt, .next-btn{transition:none;}
+  }
+
+  @media (max-width:480px){
+    .content{padding:20px 16px 18px;}
+    .question{font-size:17px;}
+    .summary .big{font-size:44px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="kicker">
+    <span class="spark">⚡</span>
+    <h1>CodeSpark Club</h1>
+    <span class="sub mono">// practice.js</span>
+  </div>
+
+  <div class="window">
+    <div class="titlebar">
+      <div class="dots"><i></i><i></i><i></i></div>
+      <div class="filetab"><span class="dotfile"></span>practice.js</div>
+      <div class="streak mono">streak <b id="streakVal">0</b></div>
+    </div>
+
+    <div class="progress-row" id="progressRow"></div>
+
+    <div id="quizBody"></div>
+  </div>
+
+  <div class="foot-note">Built for the 25 students of the CodeSpark Club — every run starts fresh.</div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    topic: "variables",
+    q: "What will this code print?",
+    code: `<span class="kw">let</span> score = <span class="str">5</span>;
+score = score + <span class="str">3</span>;
+console.<span class="fn">log</span>(score);`,
+    options: ["5", "8", "\"53\"", "Error"],
+    correct: 1,
+    why: "score starts at 5, then 3 is added to it, so the final value stored and printed is 8."
+  },
+  {
+    topic: "data types",
+    q: "Which value is a boolean?",
+    code: null,
+    options: ["\"true\"", "42", "true", "null"],
+    correct: 2,
+    why: "true (without quotes) is a boolean value. \"true\" in quotes is just text — a string."
+  },
+  {
+    topic: "conditionals",
+    q: "What does this print?",
+    code: `<span class="kw">let</span> age = <span class="str">15</span>;
+<span class="kw">if</span> (age >= <span class="str">18</span>) {
+  console.<span class="fn">log</span>(<span class="str">"Adult"</span>);
+} <span class="kw">else</span> {
+  console.<span class="fn">log</span>(<span class="str">"Minor"</span>);
+}`,
+    options: ["Adult", "Minor", "Nothing prints", "Error"],
+    correct: 1,
+    why: "15 is not greater than or equal to 18, so the else branch runs and prints \"Minor\"."
+  },
+  {
+    topic: "loops",
+    q: "How many times does this loop run?",
+    code: `<span class="kw">for</span> (<span class="kw">let</span> i = <span class="str">0</span>; i < <span class="str">4</span>; i++) {
+  console.<span class="fn">log</span>(i);
+}`,
+    options: ["3 times", "4 times", "5 times", "Infinite"],
+    correct: 1,
+    why: "i starts at 0 and runs while i < 4, so it runs for i = 0, 1, 2, 3 — that's 4 times."
+  },
+  {
+    topic: "functions",
+    q: "What does calling greet(\"Sara\") return?",
+    code: `<span class="kw">function</span> <span class="fn">greet</span>(name) {
+  <span class="kw">return</span> <span class="str">"Hello, "</span> + name;
+}`,
+    options: ["\"Hello, \"", "\"Hello, Sara\"", "undefined", "Error"],
+    correct: 1,
+    why: "The function joins \"Hello, \" with whatever name is passed in, so greet(\"Sara\") returns \"Hello, Sara\"."
+  },
+  {
+    topic: "arrays",
+    q: "What is fruits[1] in this list?",
+    code: `<span class="kw">let</span> fruits = [<span class="str">"mango"</span>, <span class="str">"guava"</span>, <span class="str">"lime"</span>];`,
+    options: ["\"mango\"", "\"guava\"", "\"lime\"", "undefined"],
+    correct: 1,
+    why: "Arrays start counting from index 0, so index 1 is the second item: \"guava\"."
+  },
+  {
+    topic: "operators",
+    q: "What does 7 % 2 evaluate to?",
+    code: null,
+    options: ["3.5", "1", "0", "14"],
+    correct: 1,
+    why: "% is the modulo operator — it gives the remainder after division. 7 divided by 2 leaves a remainder of 1."
+  },
+  {
+    topic: "loops",
+    q: "What's wrong with this loop?",
+    code: `<span class="kw">let</span> i = <span class="str">0</span>;
+<span class="kw">while</span> (i < <span class="str">5</span>) {
+  console.<span class="fn">log</span>(i);
+}`,
+    options: [
+      "Nothing, it works fine",
+      "i is never increased, so it loops forever",
+      "while loops can't use <",
+      "console.log is wrong"
+    ],
+    correct: 1,
+    why: "Since i is never updated inside the loop, the condition i < 5 stays true forever — this is an infinite loop.",
+  },
+  {
+    topic: "comments",
+    q: "Which line is a comment and won't run as code?",
+    code: `<span class="cm">// calculate total price</span>
+<span class="kw">let</span> total = <span class="str">100</span>;`,
+    options: [
+      "let total = 100;",
+      "// calculate total price",
+      "Both lines run as code",
+      "Neither line runs"
+    ],
+    correct: 1,
+    why: "Lines starting with // are comments — notes for humans that the computer skips entirely when running the code."
+  },
+  {
+    topic: "booleans & logic",
+    q: "What does this print?",
+    code: `<span class="kw">let</span> hasKey = <span class="str">true</span>;
+<span class="kw">let</span> hasTicket = <span class="str">false</span>;
+console.<span class="fn">log</span>(hasKey && hasTicket);`,
+    options: ["true", "false", "hasKey", "Error"],
+    correct: 1,
+    why: "&& (AND) is only true when both sides are true. Since hasTicket is false, the whole expression is false."
+  },
+  {
+    topic: "functions",
+    q: "Why does this function return undefined?",
+    code: `<span class="kw">function</span> <span class="fn">add</span>(a, b) {
+  a + b;
+}
+console.<span class="fn">log</span>(<span class="fn">add</span>(<span class="str">2</span>, <span class="str">3</span>));`,
+    options: [
+      "2 and 3 are the wrong types",
+      "It's missing a return statement",
+      "Functions can't add numbers",
+      "console.log is broken"
+    ],
+    correct: 1,
+    why: "The function calculates a + b but never uses return to send the value back, so the function outputs nothing useful: undefined."
+  },
+  {
+    topic: "variables",
+    q: "What's the difference between let and const?",
+    code: null,
+    options: [
+      "No difference at all",
+      "const can be reassigned, let cannot",
+      "let can be reassigned, const cannot",
+      "const is only for numbers"
+    ],
+    correct: 2,
+    why: "let creates a variable you can change later. const locks the value in — trying to reassign it causes an error."
+  }
+];
+
+let order = [];
+let idx = 0;
+let correctCount = 0;
+let streak = 0;
+let answered = false;
+
+const quizBody = document.getElementById('quizBody');
+const progressRow = document.getElementById('progressRow');
+const streakVal = document.getElementById('streakVal');
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function buildProgress(){
+  progressRow.innerHTML = '';
+  QUESTIONS.forEach((_,i)=>{
+    const s = document.createElement('i');
+    if(i < idx) s.classList.add('done');
+    else if(i === idx) s.classList.add('now');
+    progressRow.appendChild(s);
+  });
+}
+
+function start(){
+  order = shuffle(QUESTIONS.map((_,i)=>i));
+  idx = 0; correctCount = 0; streak = 0; answered=false;
+  streakVal.textContent = '0';
+  renderQuestion();
+}
+
+function renderQuestion(){
+  answered = false;
+  buildProgress();
+  const qi = order[idx];
+  const q = QUESTIONS[qi];
+  const total = QUESTIONS.length;
+
+  let html = `
+    <div class="content">
+      <div class="qmeta">Question ${idx+1} / ${total} · <span class="tag">${q.topic}</span></div>
+      <p class="question">${q.q}</p>
+      ${q.code ? `<pre class="snippet mono">${q.code}</pre>` : ''}
+      <div class="options" id="optionsWrap">
+        ${q.options.map((opt,i)=>`<button class="opt" data-i="${i}"><span class="prompt">&gt;</span> ${opt}</button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div class="footer-row">
+      <button class="next-btn" id="nextBtn">${idx === total-1 ? 'see results →' : 'next →'}</button>
+    </div>
+  `;
+  quizBody.innerHTML = html;
+
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>handleAnswer(parseInt(btn.dataset.i), q));
+  });
+  document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+}
+
+function handleAnswer(choice, q){
+  if(answered) return;
+  answered = true;
+  const opts = document.querySelectorAll('.opt');
+  opts.forEach((btn,i)=>{
+    btn.disabled = true;
+    if(i === q.correct) btn.classList.add('correct');
+    else if(i === choice) btn.classList.add('wrong');
+    else btn.classList.add('fade');
+  });
+
+  const fb = document.getElementById('feedback');
+  if(choice === q.correct){
+    correctCount++;
+    streak++;
+    fb.innerHTML = `<b>Correct.</b> ${q.why}`;
+  } else {
+    streak = 0;
+    fb.innerHTML = `<b>Not quite.</b> ${q.why}`;
+  }
+  streakVal.textContent = streak;
+
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function nextQuestion(){
+  if(idx < QUESTIONS.length-1){
+    idx++;
+    renderQuestion();
+  } else {
+    renderSummary();
+  }
+}
+
+function renderSummary(){
+  const total = QUESTIONS.length;
+  const pct = Math.round((correctCount/total)*100);
+  progressRow.innerHTML = '';
+  QUESTIONS.forEach(()=>{
+    const s = document.createElement('i');
+    s.classList.add('done');
+    progressRow.appendChild(s);
+  });
+
+  let msg;
+  if(pct === 100) msg = "Every answer correct. You're ready to help teach the next lesson.";
+  else if(pct >= 70) msg = "Solid run — you've got the fundamentals down. A quick review of the missed ones and you're set.";
+  else if(pct >= 40) msg = "Good first pass. Go over the explanations above and try again — it'll click.";
+  else msg = "This is where everyone starts. Read each explanation carefully, then run it back.";
+
+  quizBody.innerHTML = `
+    <div class="summary">
+      <div class="label mono">SCORE</div>
+      <div class="big">${correctCount}/${total}</div>
+      <h2>${pct}% correct</h2>
+      <p class="msg">${msg}</p>
+      <div class="summary-actions">
+        <button class="btn primary" id="retryBtn">$ restart()</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('retryBtn').addEventListener('click', start);
+}
+
+start();
+</script>
+</body>
+</html>
