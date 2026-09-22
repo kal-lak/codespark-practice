@@ -62,4 +62,4 @@ This project is one small part of that effort — built to outlast my own time l
 
 ---
 
-*Built by [Your Name], founder and lead instructor, CodeSpark Club.*
+*Built by Kalkidan Chalachew, founder and lead instructor, CodeSpark Club.*
